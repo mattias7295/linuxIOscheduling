@@ -19,6 +19,11 @@
 
 bool stop = false;
 
+struct data {
+    char filename[30];
+    int filesize;
+};
+
 double get_time() {
     struct timeval now;
     gettimeofday(&now, NULL);
@@ -52,12 +57,12 @@ void *read(void *id) {
 }
 
 void *write(void *id) {
-    char *file = (char *) id;
-    FILE *fp = fopen(file, "w+");
+    struct data *d = (struct data *) id;
+    FILE *fp = fopen(d->filename, "w+");
     if (!fp) {
-        perror(file);
+        perror(d->filename);
     } else {
-        int size = MEGABYTE*100;
+        int size = MEGABYTE*d->filesize;
         for (int i = 0; i < size; i++) {
             if (fputc(1, fp) == EOF) {
                 fclose(fp);
@@ -70,16 +75,26 @@ void *write(void *id) {
 }
 
 int main(int argc, char **argv) {
+    if (argc != 2) {
+        printf("Usage: %s size_in_MB\n", argv[0]);
+        return 0;
+    }
+
+
     double end_time, start_time, total_time;
     int num_threads = 110;
+    int size;
 
+    sscanf(argv[1], "%d", &size);
     pthread_t threads[num_threads];
 
     start_time = get_time();
     for (int i = 0; i < 10; i++) {
-        char *file = malloc(sizeof(char) * 30);
-        sprintf(file, "files/file%d", i);
-        pthread_create(&threads[i], NULL, write, (void *) file);
+        struct data *d = malloc(sizeof(struct data));
+        //char *file = malloc(sizeof(char) * 30);
+        sprintf(d->filename, "files/file%d", i);
+        d->filesize = size;
+        pthread_create(&threads[i], NULL, write, (void *) d);
     }
 
     for (int i = 10; i < num_threads; i++) {
@@ -100,8 +115,8 @@ int main(int argc, char **argv) {
 
     total_time = end_time - start_time;
 
-    printf("Result: with %d threads reading files directory\n", num_threads);
-    printf("Took %.2f seconds to read %.2f MB. Speed %.2f MB/s.\n", total_time, 100.0*10, (100.0*10)/total_time);
+    printf("Result: with 10 threads writing %dMB total and 100 threads reading 1KB files\n", size);
+    printf("Took %.2f seconds to read %d MB. Speed %.2f MB/s.\n", total_time, size*10, (size*10.0)/total_time);
 
     return 0;
 }
