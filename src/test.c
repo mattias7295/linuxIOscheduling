@@ -115,8 +115,8 @@ int main(int argc, char **argv) {
 
     total_time = end_time - start_time;
 
-    printf("Result: with 10 threads writing %dMB total and 100 threads reading 1KB files\n", size);
-    printf("Took %.2f seconds to read %d MB. Speed %.2f MB/s.\n", total_time, size*10, (size*10.0)/total_time);
+    printf("Result: writing %d MB total\n", size);
+    printf("Took %.2fs to read %d MB. Speed %.2f MB/s.\n", total_time, size*10, (size*10.0)/total_time);
 
     return 0;
 }
