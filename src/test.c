@@ -1,9 +1,19 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#define MEGABYTE 1048576
+#define KILOBYTE 1024
+
+#define bool int
+#define true 1
+#define false 0
+
+bool stop = false;
 
 double get_time() {
     struct timeval now;
@@ -20,50 +30,74 @@ off_t file_size(const char *file) {
     return -1;
 }
 
-void *work(void *id) {
+void *read(void *id) {
     char *file = (char *) id;
-    FILE *fp = fopen(file, "rb");
+    FILE *fp = fopen(file, "r");
     if (!fp) {
         perror(file);
     } else {
-        while (fgetc(fp) != EOF) {
-
+        while (!stop) {
+            if (fgetc(fp) == EOF) {
+                fseek(fp, 0, SEEK_SET); // beginning of file
+            }
         }
-
         fclose(fp);
     }
 
-    return (void *)1;
+    return 0;
+}
+
+void *write(void *id) {
+    char *file = (char *) id;
+    FILE *fp = fopen(file, "w+");
+    if (!fp) {
+        perror(file);
+    } else {
+        int size = MEGABYTE*100;
+        for (int i = 0; i < size; i++) {
+            if (fputc(1, fp) == EOF) {
+                fclose(fp);
+                return (void*) -1;
+            }
+        }
+        fclose(fp);
+    }
+    return 0;
 }
 
 int main(int argc, char **argv) {
-    if (argc != 3) {
-        printf("usage: %s filename num_threads\n", argv[0]);
-        exit(1);
-    }
     double end_time, start_time, total_time;
-    int num_threads;
+    int num_threads = 110;
 
-    const char *file = argv[1];
-    sscanf(argv[2], "%d", &num_threads);
     pthread_t threads[num_threads];
 
-    off_t size = file_size(file);
     start_time = get_time();
-    for (int i = 0; i < num_threads; i++) {
-        pthread_create(&threads[i], NULL, work, (void *) file);
+    for (int i = 0; i < 10; i++) {
+        char *file = malloc(sizeof(char) * 30);
+        sprintf(file, "files/file%d", i);
+        pthread_create(&threads[i], NULL, write, (void *) file);
     }
 
-    for (int i = 0; i < num_threads; i++) {
+    for (int i = 10; i < num_threads; i++) {
+        char *file = malloc(sizeof(char) * 30);
+        sprintf(file, "files/sfile%d", i);
+        pthread_create(&threads[i], NULL, read, (void *) file);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    end_time = get_time();
+    stop = true;
+
+    for (int i = 10; i < num_threads; i++) {
         pthread_join(threads[i], NULL);
     }
 
-    end_time = get_time();
-
     total_time = end_time - start_time;
 
-    printf("Result: with %d threads reading %s\n", num_threads, file);
-    printf("Took %.2f seconds to read %.2f MiB. Speed %.2f MiB/s.\n", total_time, size/1000000.0, (size/1000000)/total_time);
+    printf("Result: with %d threads reading files directory\n", num_threads);
+    printf("Took %.2f seconds to read %.2f MB. Speed %.2f MB/s.\n", total_time, 100.0*10, (100.0*10)/total_time);
 
     return 0;
 }

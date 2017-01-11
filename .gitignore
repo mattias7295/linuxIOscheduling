@@ -1,4 +1,5 @@
 out/
+files/
 
 # Object files
 *.o
