@@ -1,4 +1,13 @@
 #!/bin/bash
+
+if [ "$#" -eq 0 ] ; then
+        echo "usage: ./benchmark.sh device-name"
+        exit 1
+fi
+
+device=$1
+
+
 echo "Setting up workspace"
 mkdir files
 cd files/
@@ -7,81 +16,81 @@ cd ..
 echo "Starting test."
 echo "Test 1: 20MB"
 echo "noop scheduler"
-echo noop > /sys/block/mmcblk0/queue/scheduler
+echo noop > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 20
 
 echo "deadline scheduler"
-echo deadline > /sys/block/mmcblk0/queue/scheduler
+echo deadline > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 20
 
 echo "cfq scheduler"
-echo cfq > /sys/block/mmcblk0/queue/scheduler
+echo cfq > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 20
 
 echo "Test 2: 40MB"
 echo "noop scheduler"
-echo noop > /sys/block/mmcblk0/queue/scheduler
+echo noop > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 40
 
 echo "deadline scheduler"
-echo deadline > /sys/block/mmcblk0/queue/scheduler
+echo deadline > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 40
 
 echo "cfq scheduler"
-echo cfq > /sys/block/mmcblk0/queue/scheduler
+echo cfq > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 40
 
 echo "Test 3: 60MB"
 echo "noop scheduler"
-echo noop > /sys/block/mmcblk0/queue/scheduler
+echo noop > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 60
 
 echo "deadline scheduler"
-echo deadline > /sys/block/mmcblk0/queue/scheduler
+echo deadline > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 60
 
 echo "cfq scheduler"
-echo cfq > /sys/block/mmcblk0/queue/scheduler
+echo cfq > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 60
 
 echo "Test 4: 80MB"
 echo "noop scheduler"
-echo noop > /sys/block/mmcblk0/queue/scheduler
+echo noop > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 80
 
 echo "deadline scheduler"
-echo deadline > /sys/block/mmcblk0/queue/scheduler
+echo deadline > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 80
 
 echo "cfq scheduler"
-echo cfq > /sys/block/mmcblk0/queue/scheduler
+echo cfq > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 80
 
 echo "Test 5: 100MB"
 echo "noop scheduler"
-echo noop > /sys/block/mmcblk0/queue/scheduler
+echo noop > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 100
 
 echo "deadline scheduler"
-echo deadline > /sys/block/mmcblk0/queue/scheduler
+echo deadline > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 100
 
 echo "cfq scheduler"
-echo cfq > /sys/block/mmcblk0/queue/scheduler
+echo cfq > /sys/block/"$device"/queue/scheduler
 sleep 3
 ./out/prog 100
 
