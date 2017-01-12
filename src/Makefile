@@ -1,6 +1,6 @@
 TARGET = ../out/prog
 LIBS = -lm -pthread
-CC = gcc-6
+CC = gcc
 CFLAGS = -g -Wall -std=c99
 
 .PHONY: default all clean

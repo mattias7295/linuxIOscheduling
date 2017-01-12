@@ -6,9 +6,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-// Command to create many files
-// for i in {10..110}; do dd if=/dev/urandom bs=1000 count=1 of=sfile$i; done
-
 
 #define MEGABYTE 1048576
 #define KILOBYTE 1024
@@ -116,7 +113,7 @@ int main(int argc, char **argv) {
     total_time = end_time - start_time;
 
     printf("Result: writing %d MB total\n", size);
-    printf("Took %.2fs to read %d MB. Speed %.2f MB/s.\n", total_time, size*10, (size*10.0)/total_time);
+    printf("Took %.2fs to write %d MB. Speed %.2f MB/s.\n", total_time, size*10, (size*10.0)/total_time);
 
     return 0;
 }
